@@ -1,4 +1,4 @@
-# Fork of Tesah Capital website
+# Tesah Capital website
 
 *Automatically synced with your [v0.dev](https://v0.dev) deployments*
 
