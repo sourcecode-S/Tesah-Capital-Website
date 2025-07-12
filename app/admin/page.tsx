@@ -1,7 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect } from "react"
+
+import { useState } from "react"
+
+import { CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -18,6 +22,8 @@ import {
   BarChart3,
   Globe,
   Zap,
+  DollarSign,
+  CreditCard,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -62,7 +68,7 @@ function getMockActivityLogs(count: number): ActivityLog[] {
       id: "1",
       action: "User Login",
       resource: "Authentication",
-      userName: "admin@tesah.com",
+      userName: "admin@example.com",
       timestamp: new Date().toISOString(),
       severity: "low",
     },
@@ -70,7 +76,7 @@ function getMockActivityLogs(count: number): ActivityLog[] {
       id: "2",
       action: "Content Updated",
       resource: "About Page",
-      userName: "editor@tesah.com",
+      userName: "editor@example.com",
       timestamp: new Date(Date.now() - 3600000).toISOString(),
       severity: "medium",
     },
@@ -78,7 +84,7 @@ function getMockActivityLogs(count: number): ActivityLog[] {
       id: "3",
       action: "User Created",
       resource: "User Management",
-      userName: "admin@tesah.com",
+      userName: "admin@example.com",
       timestamp: new Date(Date.now() - 7200000).toISOString(),
       severity: "low",
     },
@@ -94,7 +100,7 @@ function getMockActivityLogs(count: number): ActivityLog[] {
       id: "5",
       action: "Settings Changed",
       resource: "System Settings",
-      userName: "admin@tesah.com",
+      userName: "admin@example.com",
       timestamp: new Date(Date.now() - 14400000).toISOString(),
       severity: "medium",
     },
@@ -179,7 +185,7 @@ export default function DashboardPage() {
     {
       title: "Add New User",
       description: "Create a new user account",
-      href: "/admin/users?action=create",
+      href: "/admin/users",
       icon: <UserPlus className="h-6 w-6" />,
       color: "bg-gradient-to-br from-green-500 to-emerald-500",
     },
@@ -237,7 +243,7 @@ export default function DashboardPage() {
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg text-white p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name?.split(" ")[0] || "Admin"}! 👋</h1>
+            <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name?.split(" ")[0] || "Admin"} 👋</h1>
             <p className="text-blue-100">Here's what's happening with your Tesah Capital admin portal today.</p>
           </div>
           <div className="hidden md:flex items-center space-x-4">
@@ -306,6 +312,63 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
+
+        {/* New Metrics */}
+        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium opacity-90">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 opacity-75" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">$45,231.89</div>
+            <p className="text-xs opacity-90 mt-1">
+              <TrendingUp className="inline mr-1 h-3 w-3" />
+              +20.1% from last month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium opacity-90">Subscriptions</CardTitle>
+            <Users className="h-4 w-4 opacity-75" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">+2350</div>
+            <p className="text-xs opacity-90 mt-1">
+              <TrendingUp className="inline mr-1 h-3 w-3" />
+              +180.1% from last month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium opacity-90">Sales</CardTitle>
+            <CreditCard className="h-4 w-4 opacity-75" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">+12,234</div>
+            <p className="text-xs opacity-90 mt-1">
+              <TrendingUp className="inline mr-1 h-3 w-3" />
+              +19% from last month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium opacity-90">Active Now</CardTitle>
+            <Activity className="h-4 w-4 opacity-75" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">+573</div>
+            <p className="text-xs opacity-90 mt-1">
+              <TrendingUp className="inline mr-1 h-3 w-3" />
+              +201 since last hour
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content Grid */}
@@ -328,28 +391,32 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        activity.severity === "high"
-                          ? "bg-red-500"
-                          : activity.severity === "medium"
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
-                      }`}
-                    />
-                    <div>
-                      <p className="font-medium text-gray-900">{activity.action}</p>
-                      <p className="text-sm text-gray-600">
-                        {activity.resource} • by {activity.userName}
-                      </p>
+              {recentActivities.length > 0 ? (
+                recentActivities.map((activity) => (
+                  <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          activity.severity === "high"
+                            ? "bg-red-500"
+                            : activity.severity === "medium"
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
+                        }`}
+                      />
+                      <div>
+                        <p className="font-medium text-gray-900">{activity.action}</p>
+                        <p className="text-sm text-gray-600">
+                          {activity.resource} • by {activity.userName}
+                        </p>
+                      </div>
                     </div>
+                    <div className="text-sm text-gray-500">{new Date(activity.timestamp).toLocaleTimeString()}</div>
                   </div>
-                  <div className="text-sm text-gray-500">{new Date(activity.timestamp).toLocaleTimeString()}</div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">No recent activity to display.</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -472,6 +539,11 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Placeholder for More Content */}
+      <div className="flex-1 rounded-lg border border-dashed shadow-sm p-4 flex items-center justify-center text-gray-500">
+        <p>More dashboard content coming soon!</p>
+      </div>
     </div>
   )
 }

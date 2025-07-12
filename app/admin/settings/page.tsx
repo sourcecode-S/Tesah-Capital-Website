@@ -1,17 +1,22 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import type React from "react"
+
+import { useEffect } from "react"
+
 import { useRouter } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
+import { useState } from "react"
+
+import { CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, Save, Eye, AlertTriangle } from "lucide-react"
-import { apiService } from "@/lib/api-service"
 
 interface SettingsState {
   general: {
@@ -38,41 +43,95 @@ interface SettingsState {
   }
 }
 
+interface User {
+  id: string
+  email: string
+  name: string
+  role: string
+}
+
+// Mock API service for settings
+const mockSettings = {
+  general: {
+    siteName: "Tesah Capital",
+    siteDescription: "Investment Management Company",
+    contactEmail: "info@tesahcapital.com",
+    phoneNumber: "+233 302 908 640",
+    address: "No. 4 Sir Arku Korsah Road, Airport Residential Area, Accra",
+    logo: "/images/tesah-logo.png",
+    favicon: "/favicon.ico",
+  },
+  social: {
+    facebook: "https://facebook.com/tesahcapital",
+    twitter: "https://twitter.com/tesahcapital",
+    instagram: "https://instagram.com/tesahcapital",
+    linkedin: "https://linkedin.com/company/tesahcapital",
+    youtube: "https://youtube.com/tesahcapital",
+  },
+  security: {
+    enableTwoFactor: false,
+    passwordExpiry: 90,
+    maxLoginAttempts: 5,
+    sessionTimeout: 30,
+  },
+}
+
+const fetchSettings = async (category: keyof SettingsState): Promise<any> => {
+  return new Promise((resolve) => setTimeout(() => resolve(mockSettings[category]), 300))
+}
+
+const saveSettings = async (category: keyof SettingsState, data: any): Promise<any> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      Object.assign(mockSettings[category], data) // Update mock data
+      resolve({ success: true, data: mockSettings[category] })
+    }, 500)
+  })
+}
+
 export default function SettingsPage() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isPreviewing, setIsPreviewing] = useState(false)
   const [activeTab, setActiveTab] = useState("general")
   const [settings, setSettings] = useState<SettingsState>({
     general: {
-      siteName: "Tesah Capital",
-      siteDescription: "Investment Management Company",
-      contactEmail: "info@tesahcapital.com",
-      phoneNumber: "+233 302 908 640",
-      address: "No. 4 Sir Arku Korsah Road, Airport Residential Area, Accra",
-      logo: "/images/tesah-logo.png",
-      favicon: "/favicon.ico",
+      siteName: "",
+      siteDescription: "",
+      contactEmail: "",
+      phoneNumber: "",
+      address: "",
+      logo: "",
+      favicon: "",
     },
     social: {
-      facebook: "https://facebook.com/tesahcapital",
-      twitter: "https://twitter.com/tesahcapital",
-      instagram: "https://instagram.com/tesahcapital",
-      linkedin: "https://linkedin.com/company/tesahcapital",
-      youtube: "https://youtube.com/tesahcapital",
+      facebook: "",
+      twitter: "",
+      instagram: "",
+      linkedin: "",
+      youtube: "",
     },
     security: {
       enableTwoFactor: false,
-      passwordExpiry: 90,
-      maxLoginAttempts: 5,
-      sessionTimeout: 30,
+      passwordExpiry: 0,
+      maxLoginAttempts: 0,
+      sessionTimeout: 0,
     },
   })
   const [originalSettings, setOriginalSettings] = useState<SettingsState | null>(null)
   const router = useRouter()
   const { toast } = useToast()
+  const [siteTitle, setSiteTitle] = useState("Tesah Capital")
+  const [siteDescription, setSiteDescription] = useState("Your trusted partner in wealth management.")
+  const [contactEmail, setContactEmail] = useState("info@tesahcapital.com")
+  const [phone, setPhone] = useState("+233 30 296 0000")
+  const [address, setAddress] = useState("123 Financial Street, Accra, Ghana")
+  const [socialFacebook, setSocialFacebook] = useState("https://facebook.com/tesahcapital")
+  const [socialTwitter, setSocialTwitter] = useState("https://twitter.com/tesahcapital")
+  const [socialLinkedIn, setSocialLinkedIn] = useState("https://linkedin.com/company/tesahcapital")
+  const [enableMaintenanceMode, setEnableMaintenanceMode] = useState(false)
 
-  // Load user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("admin_user")
     if (storedUser) {
@@ -81,71 +140,54 @@ export default function SettingsPage() {
     setIsLoading(false)
   }, [])
 
-  // Load settings
   useEffect(() => {
-    const loadSettings = async () => {
+    const loadAllSettings = async () => {
       try {
-        const generalResponse = await apiService.getSettings("general")
-        const socialResponse = await apiService.getSettings("social")
-        const securityResponse = await apiService.getSettings("security")
+        const general = await fetchSettings("general")
+        const social = await fetchSettings("social")
+        const security = await fetchSettings("security")
 
-        if (generalResponse.success && generalResponse.data) {
-          setSettings((prev) => ({ ...prev, general: { ...prev.general, ...generalResponse.data } }))
+        const loadedSettings = {
+          general: general || mockSettings.general,
+          social: social || mockSettings.social,
+          security: security || mockSettings.security,
         }
-
-        if (socialResponse.success && socialResponse.data) {
-          setSettings((prev) => ({ ...prev, social: { ...prev.social, ...socialResponse.data } }))
-        }
-
-        if (securityResponse.success && securityResponse.data) {
-          setSettings((prev) => ({ ...prev, security: { ...prev.security, ...securityResponse.data } }))
-        }
-
-        // Store original settings for comparison
-        setOriginalSettings({
-          general: { ...settings.general },
-          social: { ...settings.social },
-          security: { ...settings.security },
-        })
+        setSettings(loadedSettings)
+        setOriginalSettings(JSON.parse(JSON.stringify(loadedSettings))) // Deep copy
       } catch (error) {
         console.error("Error loading settings:", error)
         toast({
           title: "Error",
-          description: "Failed to load settings",
+          description: "Failed to load settings.",
           variant: "destructive",
         })
       }
     }
 
     if (user) {
-      loadSettings()
+      loadAllSettings()
     }
   }, [user, toast])
 
-  const handleSaveSettings = async () => {
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault()
     setIsSaving(true)
     try {
-      // Save each settings category
-      await apiService.saveSettings("general", settings.general)
-      await apiService.saveSettings("social", settings.social)
-      await apiService.saveSettings("security", settings.security)
+      await saveSettings("general", settings.general)
+      await saveSettings("social", settings.social)
+      await saveSettings("security", settings.security)
 
-      // Update original settings
-      setOriginalSettings({
-        general: { ...settings.general },
-        social: { ...settings.social },
-        security: { ...settings.security },
-      })
+      setOriginalSettings(JSON.parse(JSON.stringify(settings))) // Update original settings after save
 
       toast({
         title: "Settings saved",
-        description: "Your settings have been updated successfully",
+        description: "Your settings have been updated successfully.",
       })
     } catch (error) {
       console.error("Error saving settings:", error)
       toast({
         title: "Error",
-        description: "Failed to save settings",
+        description: "Failed to save settings.",
         variant: "destructive",
       })
     } finally {
@@ -155,12 +197,13 @@ export default function SettingsPage() {
 
   const handlePreviewChanges = () => {
     setIsPreviewing(true)
-    // Store current settings in localStorage for preview
-    localStorage.setItem("preview_settings", JSON.stringify(settings))
-
-    // Open preview in new tab
-    window.open("/admin-preview", "_blank")
-
+    // In a real app, you'd send these settings to a preview service
+    // For this demo, we'll just log them
+    console.log("Previewing changes:", settings)
+    toast({
+      title: "Preview Mode",
+      description: "Changes are being previewed (check console).",
+    })
     setTimeout(() => {
       setIsPreviewing(false)
     }, 1000)
@@ -168,12 +211,7 @@ export default function SettingsPage() {
 
   const hasChanges = () => {
     if (!originalSettings) return false
-
-    return (
-      JSON.stringify(settings.general) !== JSON.stringify(originalSettings.general) ||
-      JSON.stringify(settings.social) !== JSON.stringify(originalSettings.social) ||
-      JSON.stringify(settings.security) !== JSON.stringify(originalSettings.security)
-    )
+    return JSON.stringify(settings) !== JSON.stringify(originalSettings)
   }
 
   if (isLoading) {
@@ -229,271 +267,144 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="social">Social Media</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-        </TabsList>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>General Settings</CardTitle>
+            <CardDescription>Manage general website information.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="site-name">Site Name</Label>
+              <Input
+                id="site-name"
+                value={settings.general.siteName}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    general: { ...prev.general, siteName: e.target.value },
+                  }))
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="site-description">Site Description</Label>
+              <Textarea
+                id="site-description"
+                value={settings.general.siteDescription}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    general: { ...prev.general, siteDescription: e.target.value },
+                  }))
+                }
+                rows={3}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="contact-email">Contact Email</Label>
+              <Input
+                id="contact-email"
+                type="email"
+                value={settings.general.contactEmail}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    general: { ...prev.general, contactEmail: e.target.value },
+                  }))
+                }
+              />
+            </div>
+            <Button className="w-fit" onClick={() => handleSaveSettings}>
+              Save General Settings
+            </Button>
+          </CardContent>
+        </Card>
 
-        {/* General Settings */}
-        <TabsContent value="general">
-          <Card>
-            <CardHeader>
-              <CardTitle>General Settings</CardTitle>
-              <CardDescription>Configure basic information about your website</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="site-name">Site Name</Label>
-                  <Input
-                    id="site-name"
-                    value={settings.general.siteName}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        general: { ...prev.general, siteName: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-email">Contact Email</Label>
-                  <Input
-                    id="contact-email"
-                    type="email"
-                    value={settings.general.contactEmail}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        general: { ...prev.general, contactEmail: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-              </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Social Media Links</CardTitle>
+            <CardDescription>Update your social media profiles.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="facebook">Facebook URL</Label>
+              <Input
+                id="facebook"
+                value={settings.social.facebook}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    social: { ...prev.social, facebook: e.target.value },
+                  }))
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="twitter">Twitter URL</Label>
+              <Input
+                id="twitter"
+                value={settings.social.twitter}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    social: { ...prev.social, twitter: e.target.value },
+                  }))
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="linkedin">LinkedIn URL</Label>
+              <Input
+                id="linkedin"
+                value={settings.social.linkedin}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    social: { ...prev.social, linkedin: e.target.value },
+                  }))
+                }
+              />
+            </div>
+            <Button className="w-fit" onClick={() => handleSaveSettings}>
+              Save Social Links
+            </Button>
+          </CardContent>
+        </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="site-description">Site Description</Label>
-                <Textarea
-                  id="site-description"
-                  value={settings.general.siteDescription}
-                  onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      general: { ...prev.general, siteDescription: e.target.value },
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone-number">Phone Number</Label>
-                  <Input
-                    id="phone-number"
-                    value={settings.general.phoneNumber}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        general: { ...prev.general, phoneNumber: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="logo">Logo URL</Label>
-                  <Input
-                    id="logo"
-                    value={settings.general.logo}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        general: { ...prev.general, logo: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Textarea
-                  id="address"
-                  value={settings.general.address}
-                  onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      general: { ...prev.general, address: e.target.value },
-                    }))
-                  }
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Social Media Settings */}
-        <TabsContent value="social">
-          <Card>
-            <CardHeader>
-              <CardTitle>Social Media</CardTitle>
-              <CardDescription>Configure your social media profiles</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="facebook">Facebook</Label>
-                  <Input
-                    id="facebook"
-                    value={settings.social.facebook}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        social: { ...prev.social, facebook: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="twitter">Twitter</Label>
-                  <Input
-                    id="twitter"
-                    value={settings.social.twitter}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        social: { ...prev.social, twitter: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="instagram">Instagram</Label>
-                  <Input
-                    id="instagram"
-                    value={settings.social.instagram}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        social: { ...prev.social, instagram: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="linkedin">LinkedIn</Label>
-                  <Input
-                    id="linkedin"
-                    value={settings.social.linkedin}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        social: { ...prev.social, linkedin: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="youtube">YouTube</Label>
-                <Input
-                  id="youtube"
-                  value={settings.social.youtube}
-                  onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      social: { ...prev.social, youtube: e.target.value },
-                    }))
-                  }
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Security Settings */}
-        <TabsContent value="security">
-          <Card>
-            <CardHeader>
-              <CardTitle>Security Settings</CardTitle>
-              <CardDescription>Configure security options for your website</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="two-factor">Two-Factor Authentication</Label>
-                  <p className="text-sm text-gray-500">Require two-factor authentication for all admin users</p>
-                </div>
-                <Switch
-                  id="two-factor"
-                  checked={settings.security.enableTwoFactor}
-                  onCheckedChange={(checked) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      security: { ...prev.security, enableTwoFactor: checked },
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password-expiry">Password Expiry (days)</Label>
-                  <Input
-                    id="password-expiry"
-                    type="number"
-                    value={settings.security.passwordExpiry}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        security: { ...prev.security, passwordExpiry: Number.parseInt(e.target.value) || 0 },
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="max-login-attempts">Max Login Attempts</Label>
-                  <Input
-                    id="max-login-attempts"
-                    type="number"
-                    value={settings.security.maxLoginAttempts}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        security: { ...prev.security, maxLoginAttempts: Number.parseInt(e.target.value) || 0 },
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="session-timeout">Session Timeout (minutes)</Label>
-                <Input
-                  id="session-timeout"
-                  type="number"
-                  value={settings.security.sessionTimeout}
-                  onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      security: { ...prev.security, sessionTimeout: Number.parseInt(e.target.value) || 0 },
-                    }))
-                  }
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="bg-gray-50 border-t border-gray-100 text-sm text-gray-600">
-              <p>Security settings affect all users. Changes will take effect immediately after saving.</p>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        <Card>
+          <CardHeader>
+            <CardTitle>Security Settings</CardTitle>
+            <CardDescription>Configure security-related options.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="2fa">Enable Two-Factor Authentication</Label>
+              <Switch
+                id="2fa"
+                checked={settings.security.enableTwoFactor}
+                onCheckedChange={(checked) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    security: { ...prev.security, enableTwoFactor: checked },
+                  }))
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="email-notifications">Email Notifications for Login Attempts</Label>
+              <Switch id="email-notifications" />
+            </div>
+            <Button className="w-fit" onClick={() => handleSaveSettings}>
+              Save Security Settings
+            </Button>
+          </CardContent>
+          <CardFooter className="bg-gray-50 border-t border-gray-100 text-sm text-gray-600">
+            <p>Security settings affect all users. Changes will take effect immediately after saving.</p>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   )
 }
