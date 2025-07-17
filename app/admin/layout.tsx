@@ -17,6 +17,7 @@ import {
   Briefcase,
   LogOut,
   Loader2,
+  LineChart,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -81,6 +82,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Media", href: "/admin/media", icon: ImageIcon, roles: ["super_admin", "admin", "editor"] },
     { name: "Careers", href: "/admin/careers", icon: Briefcase, roles: ["super_admin", "admin", "editor"] },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3, roles: ["super_admin", "admin"] },
+    {
+      name: "Market Data",
+      href: "/admin/market-data",
+      icon: LineChart,
+      roles: ["super_admin", "admin", "editor", "viewer"],
+    }, // New item
     { name: "Settings", href: "/admin/settings", icon: Settings, roles: ["super_admin", "admin"] },
   ]
 

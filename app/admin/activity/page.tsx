@@ -18,6 +18,7 @@ export default function ActivityPage() {
   const [severityFilter, setSeverityFilter] = useState<string>("all")
   const [userFilter, setUserFilter] = useState<string>("all")
   const [logs, setLogs] = useState<ActivityLog[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   // Load user from localStorage
   useEffect(() => {
@@ -30,9 +31,22 @@ export default function ActivityPage() {
 
   // Load activity logs
   useEffect(() => {
-    if (user) {
-      setLogs(getActivityLogs(100))
+    const fetchLogs = async () => {
+      if (user) {
+        setIsLoading(true)
+        setError(null)
+        try {
+          const fetchedLogs = await getActivityLogs(100)
+          setLogs(fetchedLogs)
+        } catch (err: any) {
+          console.error("Failed to fetch activity logs:", err)
+          setError(err.message || "Failed to load activity logs.")
+        } finally {
+          setIsLoading(false)
+        }
+      }
     }
+    fetchLogs()
   }, [user])
 
   // Filter logs based on search and filters
@@ -104,6 +118,21 @@ export default function ActivityPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center text-red-500">
+          <AlertTriangle className="h-12 w-12 mx-auto mb-4" />
+          <h3 className="text-lg font-medium">Error Loading Activity Logs</h3>
+          <p className="text-gray-600">{error}</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
+            Retry
+          </Button>
+        </div>
       </div>
     )
   }

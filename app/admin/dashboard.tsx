@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect } from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CardDescription } from "@/components/ui/card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Users,
   Activity,
@@ -22,17 +22,11 @@ import {
   Zap,
   DollarSign,
   CreditCard,
+  Newspaper,
+  Briefcase,
 } from "lucide-react"
 import Link from "next/link"
-
-interface DashboardStats {
-  totalUsers: number
-  activeUsers: number
-  totalSessions: number
-  systemHealth: number
-  securityScore: number
-  recentActivities: number
-}
+import { useDashboardData } from "@/hooks/use-dashboard-data"
 
 interface User {
   id: string
@@ -41,114 +35,8 @@ interface User {
   role: string
 }
 
-interface ActivityLog {
-  id: string
-  action: string
-  resource: string
-  userName: string
-  timestamp: string
-  severity: "low" | "medium" | "high"
-}
-
-interface Notification {
-  id: string
-  title: string
-  message: string
-  type: "info" | "success" | "warning" | "error"
-  createdAt: string
-  isRead: boolean
-}
-
-// Mock data functions
-function getMockActivityLogs(count: number): ActivityLog[] {
-  const activities: ActivityLog[] = [
-    {
-      id: "1",
-      action: "User Login",
-      resource: "Authentication",
-      userName: "admin@example.com",
-      timestamp: new Date().toISOString(),
-      severity: "low",
-    },
-    {
-      id: "2",
-      action: "Content Updated",
-      resource: "About Page",
-      userName: "editor@example.com",
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
-      severity: "medium",
-    },
-    {
-      id: "3",
-      action: "User Created",
-      resource: "User Management",
-      userName: "admin@example.com",
-      timestamp: new Date(Date.now() - 7200000).toISOString(),
-      severity: "low",
-    },
-    {
-      id: "4",
-      action: "Failed Login Attempt",
-      resource: "Authentication",
-      userName: "unknown",
-      timestamp: new Date(Date.now() - 10800000).toISOString(),
-      severity: "high",
-    },
-    {
-      id: "5",
-      action: "Settings Changed",
-      resource: "System Settings",
-      userName: "admin@example.com",
-      timestamp: new Date(Date.now() - 14400000).toISOString(),
-      severity: "medium",
-    },
-  ]
-
-  return activities.slice(0, count)
-}
-
-function getMockNotifications(userId?: string): Notification[] {
-  return [
-    {
-      id: "1",
-      title: "System Update",
-      message: "The system will be updated tonight at 2 AM. Expect brief downtime.",
-      type: "info",
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      isRead: false,
-    },
-    {
-      id: "2",
-      title: "Security Alert",
-      message: "Multiple failed login attempts detected. Please review security logs.",
-      type: "warning",
-      createdAt: new Date(Date.now() - 7200000).toISOString(),
-      isRead: true,
-    },
-    {
-      id: "3",
-      title: "Content Published",
-      message: "New content has been published to the website.",
-      type: "success",
-      createdAt: new Date(Date.now() - 10800000).toISOString(),
-      isRead: false,
-    },
-  ]
-}
-
 function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
-  const [stats, setStats] = useState<DashboardStats>({
-    totalUsers: 0,
-    activeUsers: 0,
-    totalSessions: 0,
-    systemHealth: 0,
-    securityScore: 0,
-    recentActivities: 0,
-  })
-  const [isLoading, setIsLoading] = useState(true)
-  const [recentActivities, setRecentActivities] = useState<ActivityLog[]>([])
-  const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
 
   useEffect(() => {
     // Get user from localStorage
@@ -160,24 +48,9 @@ function DashboardPage() {
     } catch (error) {
       console.error("Error getting user:", error)
     }
-
-    // Simulate loading dashboard data
-    const timer = setTimeout(() => {
-      setStats({
-        totalUsers: 156,
-        activeUsers: 23,
-        totalSessions: 1247,
-        systemHealth: 98,
-        securityScore: 95,
-        recentActivities: 42,
-      })
-      setRecentActivities(getMockActivityLogs(5))
-      setRecentNotifications(getMockNotifications())
-      setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
   }, [])
+
+  const { stats, recentActivities, recentNotifications, isLoading, error, refetch } = useDashboardData(user?.id || null)
 
   const quickActions = [
     {
@@ -228,12 +101,27 @@ function DashboardPage() {
     },
     {
       name: "Performance",
-      value: 92,
+      value: 92, // This is hardcoded, could be fetched
       color: "bg-purple-500",
       icon: <Zap className="h-4 w-4" />,
       status: "good",
     },
   ]
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center text-red-500">
+          <AlertTriangle className="h-12 w-12 mx-auto mb-4" />
+          <h3 className="text-lg font-medium">Error Loading Dashboard</h3>
+          <p className="text-gray-600">{error}</p>
+          <Button onClick={refetch} className="mt-4">
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8 p-6">
@@ -261,7 +149,9 @@ function DashboardPage() {
             <Users className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{isLoading ? "..." : stats.totalUsers}</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-24 bg-blue-400" /> : stats.totalUsers}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <TrendingUp className="inline mr-1 h-3 w-3" />
               +12% from last month
@@ -275,7 +165,9 @@ function DashboardPage() {
             <Eye className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{isLoading ? "..." : stats.activeUsers}</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-20 bg-green-400" /> : stats.activeUsers}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <TrendingUp className="inline mr-1 h-3 w-3" />
               Currently online
@@ -289,7 +181,9 @@ function DashboardPage() {
             <BarChart3 className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{isLoading ? "..." : stats.totalSessions}</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-28 bg-purple-400" /> : stats.totalSessions}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <TrendingUp className="inline mr-1 h-3 w-3" />
               +8% this week
@@ -303,7 +197,9 @@ function DashboardPage() {
             <Activity className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.recentActivities}</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-16 bg-orange-400" /> : stats.recentActivitiesCount}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <Clock className="inline mr-1 h-3 w-3" />
               Last 24 hours
@@ -318,7 +214,9 @@ function DashboardPage() {
             <DollarSign className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">$45,231.89</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-32 bg-green-400" /> : `$${stats.totalRevenue.toFixed(2)}`}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <TrendingUp className="inline mr-1 h-3 w-3" />
               +20.1% from last month
@@ -332,7 +230,9 @@ function DashboardPage() {
             <Users className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">+2350</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-24 bg-blue-400" /> : `+${stats.subscriptions}`}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <TrendingUp className="inline mr-1 h-3 w-3" />
               +180.1% from last month
@@ -346,7 +246,9 @@ function DashboardPage() {
             <CreditCard className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">+12,234</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-28 bg-purple-400" /> : `+${stats.sales}`}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <TrendingUp className="inline mr-1 h-3 w-3" />
               +19% from last month
@@ -360,7 +262,9 @@ function DashboardPage() {
             <Activity className="h-4 w-4 opacity-75" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">+573</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Skeleton className="h-8 w-20 bg-orange-400" /> : `+${stats.activeNow}`}
+            </div>
             <p className="text-xs opacity-90 mt-1">
               <TrendingUp className="inline mr-1 h-3 w-3" />
               +201 since last hour
@@ -389,7 +293,11 @@ function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivities.length > 0 ? (
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full rounded-xl bg-gray-100" />
+                ))
+              ) : recentActivities.length > 0 ? (
                 recentActivities.map((activity) => (
                   <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                     <div className="flex items-center space-x-4">
@@ -431,24 +339,28 @@ function DashboardPage() {
               <CardDescription>Common tasks and shortcuts</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {quickActions.map((action, index) => (
-                <Button
-                  key={index}
-                  asChild
-                  variant="ghost"
-                  className="w-full justify-start h-auto p-4 hover:bg-gray-50 rounded-xl"
-                >
-                  <Link href={action.href} target={action.external ? "_blank" : undefined}>
-                    <div className="flex items-center space-x-3">
-                      <div className={`${action.color} rounded-lg p-2 text-white`}>{action.icon}</div>
-                      <div className="text-left">
-                        <p className="font-medium text-gray-900">{action.title}</p>
-                        <p className="text-sm text-gray-600">{action.description}</p>
-                      </div>
-                    </div>
-                  </Link>
-                </Button>
-              ))}
+              {isLoading
+                ? Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-16 w-full rounded-xl bg-gray-100" />
+                  ))
+                : quickActions.map((action, index) => (
+                    <Button
+                      key={index}
+                      asChild
+                      variant="ghost"
+                      className="w-full justify-start h-auto p-4 hover:bg-gray-50 rounded-xl"
+                    >
+                      <Link href={action.href} target={action.external ? "_blank" : undefined}>
+                        <div className="flex items-center space-x-3">
+                          <div className={`${action.color} rounded-lg p-2 text-white`}>{action.icon}</div>
+                          <div className="text-left">
+                            <p className="font-medium text-gray-900">{action.title}</p>
+                            <p className="text-sm text-gray-600">{action.description}</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </Button>
+                  ))}
             </CardContent>
           </Card>
 
@@ -463,29 +375,99 @@ function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {systemMetrics.map((metric, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className={`${metric.color} rounded-full p-1 text-white`}>{metric.icon}</div>
-                        <span className="font-medium text-gray-900">{metric.name}</span>
+                {isLoading
+                  ? Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <Skeleton className="h-4 w-3/4 bg-gray-100" />
+                        <Skeleton className="h-2 w-full bg-gray-100" />
                       </div>
-                      <Badge
-                        variant={
-                          metric.status === "excellent"
-                            ? "default"
-                            : metric.status === "good"
-                              ? "secondary"
-                              : "destructive"
-                        }
-                      >
-                        {metric.value}%
-                      </Badge>
-                    </div>
-                    <Progress value={metric.value} className="h-2" />
-                  </div>
-                ))}
+                    ))
+                  : systemMetrics.map((metric, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <div className={`${metric.color} rounded-full p-1 text-white`}>{metric.icon}</div>
+                            <span className="font-medium text-gray-900">{metric.name}</span>
+                          </div>
+                          <Badge
+                            variant={
+                              metric.status === "excellent"
+                                ? "default"
+                                : metric.status === "good"
+                                  ? "secondary"
+                                  : "destructive"
+                            }
+                          >
+                            {metric.value}%
+                          </Badge>
+                        </div>
+                        <Progress value={metric.value} className="h-2" />
+                      </div>
+                    ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* New Dashboard Widgets for other sections */}
+          <Card className="bg-white shadow-sm border border-gray-100 rounded-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center text-xl">
+                <Newspaper className="mr-3 h-5 w-5 text-indigo-500" />
+                Content Overview
+              </CardTitle>
+              <CardDescription>Manage website pages and content</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {isLoading ? (
+                <Skeleton className="h-24 w-full bg-gray-100" />
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">Total Pages:</p>
+                    <Badge variant="outline">15</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">Published Pages:</p>
+                    <Badge variant="outline">10</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">Draft Pages:</p>
+                    <Badge variant="outline">5</Badge>
+                  </div>
+                  <Button asChild variant="outline" className="w-full mt-4 bg-transparent">
+                    <Link href="/admin/content">Manage Content</Link>
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-sm border border-gray-100 rounded-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center text-xl">
+                <Briefcase className="mr-3 h-5 w-5 text-teal-500" />
+                Careers & Applications
+              </CardTitle>
+              <CardDescription>Overview of job postings and applications</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {isLoading ? (
+                <Skeleton className="h-24 w-full bg-gray-100" />
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">Active Job Openings:</p>
+                    <Badge variant="outline">3</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">New Applications (last 7 days):</p>
+                    <Badge variant="outline">7</Badge>
+                  </div>
+                  <Button asChild variant="outline" className="w-full mt-4 bg-transparent">
+                    <Link href="/admin/careers">Manage Careers</Link>
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -510,29 +492,35 @@ function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {recentNotifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`p-4 rounded-xl border ${
-                    notification.type === "error"
-                      ? "bg-red-50 border-red-200"
-                      : notification.type === "warning"
-                        ? "bg-yellow-50 border-yellow-200"
-                        : notification.type === "success"
-                          ? "bg-green-50 border-green-200"
-                          : "bg-blue-50 border-blue-200"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{notification.title}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                      <p className="text-xs text-gray-500 mt-2">{new Date(notification.createdAt).toLocaleString()}</p>
+              {isLoading
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-20 w-full rounded-xl bg-gray-100" />
+                  ))
+                : recentNotifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`p-4 rounded-xl border ${
+                        notification.type === "error"
+                          ? "bg-red-50 border-red-200"
+                          : notification.type === "warning"
+                            ? "bg-yellow-50 border-yellow-200"
+                            : notification.type === "success"
+                              ? "bg-green-50 border-green-200"
+                              : "bg-blue-50 border-blue-200"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">{notification.title}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                          <p className="text-xs text-gray-500 mt-2">
+                            {new Date(notification.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                        {!notification.isRead && <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />}
+                      </div>
                     </div>
-                    {!notification.isRead && <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />}
-                  </div>
-                </div>
-              ))}
+                  ))}
             </div>
           </CardContent>
         </Card>
@@ -546,6 +534,4 @@ function DashboardPage() {
   )
 }
 
-export default function AdminRootPage() {
-  return <DashboardPage />
-}
+export default DashboardPage

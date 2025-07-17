@@ -4,26 +4,30 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
+import Image from "next/image"
 
-export default function AdminLoginPage() {
+export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setIsSubmitting(true)
 
-    // Simple mock authentication
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    // Mock authentication logic
     if (email === "admin@example.com" && password === "admin123") {
-      // In a real application, you would fetch user data from an API
-      // and store a token/session. For this demo, we'll mock a user object.
+      // Simulate user data based on role
       const user = {
         id: "1",
         email: "admin@example.com",
@@ -31,24 +35,30 @@ export default function AdminLoginPage() {
         role: "super_admin", // or "admin", "editor", "viewer"
       }
       localStorage.setItem("admin_user", JSON.stringify(user))
-      router.push("/admin") // Redirect to the admin dashboard
+      toast({
+        title: "Login Successful",
+        description: "Redirecting to dashboard...",
+        variant: "default",
+      })
+      router.push("/admin") // Redirect directly to the dashboard
     } else {
-      setError("Invalid email or password.")
+      toast({
+        title: "Login Failed",
+        description: "Invalid email or password.",
+        variant: "destructive",
+      })
     }
+    setIsSubmitting(false)
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-950">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <Image
-            src="/images/tesah-logo.png"
-            alt="Tesah Capital Logo"
-            width={60}
-            height={60}
-            className="mx-auto mb-4"
-          />
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
+        <CardHeader className="space-y-1 text-center">
+          <div className="flex justify-center mb-4">
+            <Image src="/images/tesah-logo.png" alt="Tesah Capital Logo" width={60} height={60} />
+          </div>
+          <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
           <CardDescription>Enter your credentials to access the admin portal.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,10 +68,10 @@ export default function AdminLoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
-                required
+                placeholder="admin@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
             <div className="grid gap-2">
@@ -69,14 +79,14 @@ export default function AdminLoginPage() {
               <Input
                 id="password"
                 type="password"
-                required
+                placeholder="admin123"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </CardContent>

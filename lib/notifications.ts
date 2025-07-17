@@ -1,72 +1,47 @@
-export interface Notification {
+// This is a mock notification service. In a real application, you would integrate with a notification system (e.g., email, push notifications).
+
+interface Notification {
   id: string
-  userId: string
-  title: string
+  timestamp: Date
+  type: "success" | "error" | "info" | "warning"
   message: string
-  type: "info" | "success" | "warning" | "error"
-  isRead: boolean
-  createdAt: Date
+  read: boolean
+  userId?: string // Optional, for user-specific notifications
 }
 
-// Mock notifications - replace with database in production
-let notifications: Notification[] = [
-  {
-    id: "1",
-    userId: "1",
-    title: "Welcome to Admin Panel",
-    message: "You have successfully logged into the admin panel",
-    type: "success",
-    isRead: false,
-    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
-  },
-  {
-    id: "2",
-    userId: "1",
-    title: "System Update",
-    message: "The system has been updated to the latest version",
-    type: "info",
-    isRead: false,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-  },
-]
+const notifications: Notification[] = []
 
-export function createNotification(notification: Omit<Notification, "id" | "createdAt">) {
+export const sendNotification = (type: Notification["type"], message: string, userId?: string): Notification => {
   const newNotification: Notification = {
-    ...notification,
-    id: Date.now().toString(),
-    createdAt: new Date(),
+    id: Date.now().toString(), // Simple ID for mock
+    timestamp: new Date(),
+    type,
+    message,
+    read: false,
+    userId,
   }
-
-  notifications.unshift(newNotification)
-
-  // Keep only last 100 notifications
-  if (notifications.length > 100) {
-    notifications = notifications.slice(0, 100)
-  }
-
+  notifications.push(newNotification)
+  console.log("Notification Sent:", newNotification)
   return newNotification
 }
 
-export function getNotifications(userId: string, limit = 20) {
-  return notifications.filter((notification) => notification.userId === userId).slice(0, limit)
+export const getNotifications = async (userId?: string, unreadOnly = false): Promise<Notification[]> => {
+  // Simulate async fetch
+  await new Promise((resolve) => setTimeout(resolve, 200))
+  const filteredNotifications = notifications.filter(
+    (n) => (userId ? n.userId === userId : true) && (unreadOnly ? !n.read : true),
+  )
+  return filteredNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
 }
 
-export function markAsRead(notificationId: string) {
-  const notification = notifications.find((n) => n.id === notificationId)
+export const markNotificationAsRead = async (id: string): Promise<boolean> => {
+  // Simulate async update
+  await new Promise((resolve) => setTimeout(resolve, 100))
+  const notification = notifications.find((n) => n.id === id)
   if (notification) {
-    notification.isRead = true
+    notification.read = true
+    console.log(`Notification ${id} marked as read.`)
+    return true
   }
-  return notification
-}
-
-export function markAllAsRead(userId: string) {
-  notifications
-    .filter((notification) => notification.userId === userId)
-    .forEach((notification) => {
-      notification.isRead = true
-    })
-}
-
-export function deleteNotification(notificationId: string) {
-  notifications = notifications.filter((n) => n.id !== notificationId)
+  return false
 }
