@@ -39,7 +39,7 @@ INSERT IGNORE INTO market_index_history (id, index_type, date, value, `change`, 
 ('gsefsi-2024-07-02', 'GSE-FSI', '2024-07-02', 2102.5, 2.5, 0.12, '2024-07-02 16:00:00'),
 ('gsefsi-2024-07-03', 'GSE-FSI', '2024-07-03', 2098.0, -4.5, -0.21, '2024-07-03 16:00:00'),
 ('gsefsi-2024-07-04', 'GSE-FSI', '2024-07-04', 2105.1, 7.1, 0.34, '2024-07-04 16:00:00'),
-('gsefsi-2024-07-05', 'GSE-FSI', '2024-07-05', 2123.45, 18.35, 0.87, '2024-07-05 16:00:00');
+('gsefsi-2024-07-05', 'GSE-FSI', 2123.45, 18.35, 0.87, '2024-07-05 16:00:00');
 
 -- Seed data for 'jobs' table
 INSERT INTO jobs (id, title, department, location, type, description, requirements, responsibilities, status, posted_date, application_deadline, applications_count)

@@ -1,6 +1,4 @@
-import { connect } from "@planetscale/database"
-import { type Column, Kysely } from "kysely"
-import { PlanetScaleDialect } from "kysely-planetscale"
+import type { Column } from "kysely"
 
 // Define your database schema here
 interface MarketDataPointsTable {
@@ -72,33 +70,11 @@ interface DatabaseSchema {
   settings: Setting
 }
 
-// Initialize Kysely with PlanetScaleDialect
-let db: Kysely<DatabaseSchema> | null = null
-
-if (process.env.DATABASE_URL) {
-  db = new Kysely<DatabaseSchema>({
-    dialect: new PlanetScaleDialect({
-      url: process.env.DATABASE_URL,
-    }),
-  })
-} else {
-  console.warn("DATABASE_URL is not set. Using mock data for database operations.")
-}
-
-// Export a function to get the database connection
-// This allows api-service.ts to check if a real DB connection exists
+// No database connection, always return null for mock data usage
 export function getDbConnection() {
-  return db
+  console.warn("DATABASE_URL is not set. Using mock data for database operations.")
+  return null
 }
 
-// For direct SQL queries (if needed, e.g., for migrations or complex queries not easily done with Kysely)
-// This uses the @planetscale/database client directly
-let sqlConnection: ReturnType<typeof connect> | null = null
-
-if (process.env.DATABASE_URL) {
-  sqlConnection = connect({
-    url: process.env.DATABASE_URL,
-  })
-}
-
-export const sql = sqlConnection
+// No direct SQL connection
+export const sql = null

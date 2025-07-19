@@ -8,8 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
-import { apiService } from "@/lib/api-service" // Import apiService
-import { Skeleton } from "@/components/ui/skeleton" // Ensure Skeleton is imported
+import { apiService } from "@/lib/api-service"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface MarketDataPoint {
   id: string

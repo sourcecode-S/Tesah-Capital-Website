@@ -9,18 +9,29 @@ interface ActivityLog {
   userId: string
   userName: string
   action: string
+  resource?: string
+  severity?: string
   details?: Record<string, any>
 }
 
 const activityLogs: ActivityLog[] = []
 
-export const logActivity = (userId: string, userName: string, action: string, details?: Record<string, any>) => {
+export const logActivity = (
+  userId: string,
+  userName: string,
+  action: string,
+  resource?: string,
+  severity?: string,
+  details?: Record<string, any>,
+) => {
   const newLog: ActivityLog = {
     id: Date.now().toString(), // Simple ID for mock
     timestamp: new Date(),
     userId,
     userName,
     action,
+    resource,
+    severity,
     details,
   }
   activityLogs.push(newLog)
