@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 
 export default function ClientPortalPage() {
@@ -25,7 +24,6 @@ export default function ClientPortalPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
           <div className="container px-4 md:px-6">

@@ -1,6 +1,5 @@
 "use client"
 
-import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import Image from "next/image"
 import { useState } from "react"
@@ -65,7 +64,7 @@ As the Regional Director - West Africa for Temenos, Mr. Boamah is responsible fo
 
 Mr. Boamah's business has focused on exponentially growing its footprint in the financial inclusion space via payment services, telcos, retail banks, governments and World Bank-funded projects.
 
-Mr Boamah serves on the board of Signature Kitchens (private) Ltd, a Ghanaian corporation principally engaged in the business of ultra-high-end living space design, manufacture and fitment in Ghana's capital.
+He serves on the board of Signature Kitchens (private) Ltd, a Ghanaian corporation principally engaged in the business of ultra-high-end living space design, manufacture and fitment in Ghana's capital.
 
 He holds an MSc in Financial Markets & Derivatives from London Guildhall University, and a Bloomberg Professional Product Certification from Bloomberg University.`,
       image: "/images/leadership/Mr_Boamah.jpg",
@@ -92,7 +91,6 @@ Dr Yankson is a product of St. Augustine's College, Cape Coast, University of Gh
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary text-secondary-foreground">

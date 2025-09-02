@@ -1,14 +1,12 @@
 "use client"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
 import { InvestmentCalculator } from "@/components/calculators/investment-calculator"
 import { RetirementCalculator } from "@/components/calculators/retirement-calculator"
+import { Footer } from "@/components/footer"
 
 export default function CalculatorsPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
           <div className="container px-4 md:px-6">

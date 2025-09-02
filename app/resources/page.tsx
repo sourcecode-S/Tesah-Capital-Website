@@ -2,7 +2,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ResourcesSection } from "@/components/resources-section"
 import { FAQSection } from "@/components/faq-section"
-import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 
 export const metadata = {
@@ -13,7 +12,6 @@ export const metadata = {
 export default function ResourcesPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
           <div className="container px-4 md:px-6">

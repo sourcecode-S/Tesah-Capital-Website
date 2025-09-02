@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { MobileNav } from "@/components/mobile-nav"
 import { NavDropdown } from "@/components/nav-dropdown"
 import { cn } from "@/lib/utils"
+import { Globe, Search, User } from "lucide-react"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -27,107 +28,192 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b bg-white text-secondary transition-all duration-300",
-        isScrolled ? "h-14" : "h-16",
+        "sticky top-0 z-50 w-full bg-white border-b border-slate-200 transition-all duration-300",
+        isScrolled ? "shadow-sm" : "",
       )}
     >
-      <div
-        className={cn(
-          "container flex items-center justify-between h-full transition-all duration-300",
-          isScrolled ? "px-4" : "px-4 md:px-6",
-        )}
-      >
-        <div className="flex items-center gap-2">
-          <MobileNav />
-          <Link
-            href="/"
-            className={cn(
-              "flex items-center gap-2 font-bold text-secondary transition-all duration-300",
-              isScrolled ? "text-lg" : "text-xl",
-            )}
-          >
-            <div className={cn("relative h-8", isScrolled ? "w-24" : "w-28")}>
+      {/* Top utility bar */}
+      <div className="border-b border-slate-100 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-10 text-sm">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-1 text-slate-600">
+                <Globe className="h-3 w-3" />
+                <span>Ghana</span>
+              </div>
+              <Link href="/contact" className="text-slate-600 hover:text-slate-900 transition-colors">
+                Contact us
+              </Link>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="text-slate-600 hover:text-slate-900 transition-colors">
+                <Search className="h-4 w-4" />
+              </button>
+              <Link
+                href="/client-portal"
+                className="flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors"
+              >
+                <User className="h-3 w-3" />
+                <span>Client Portal</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main navigation */}
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center shrink-0">
+            <div className="relative h-8 w-36">
               <Image
                 src="/images/tesah-capital-full-logo.png"
-                alt="Tesah Capital Logo"
+                alt="Tesah Capital"
                 fill
                 className="object-contain"
                 priority
               />
             </div>
           </Link>
+
+          {/* Main Navigation - GAM Style */}
+          <nav className="hidden lg:flex items-center">
+            <div className="flex items-center">
+              <NavDropdown
+                trigger="Investment solutions"
+                items={[
+                  {
+                    title: "Investment Products Overview",
+                    href: "/investment-products",
+                    description: "Explore our comprehensive range of investment solutions",
+                  },
+                  {
+                    title: "Tesah Treasury Trust (TTT)",
+                    href: "/investment-products#ttt",
+                    description: "Money market fund for capital preservation",
+                  },
+                  {
+                    title: "Tesah Future Fund (TFF)",
+                    href: "/investment-products#tff",
+                    description: "Equity fund for long-term growth",
+                  },
+                  {
+                    title: "Investment Accounts",
+                    href: "/services/investment-accounts",
+                    description: "Personalized investment account services",
+                  },
+                ]}
+                isScrolled={isScrolled}
+              />
+
+              <NavDropdown
+                trigger="Services"
+                items={[
+                  {
+                    title: "Wealth Management",
+                    href: "/services/wealth-management",
+                    description: "Comprehensive wealth management solutions",
+                  },
+                  {
+                    title: "Institutional Services",
+                    href: "/services/institutional-funds",
+                    description: "Tailored solutions for institutions",
+                  },
+                  {
+                    title: "Investment Advisory",
+                    href: "/services",
+                    description: "Professional investment guidance",
+                  },
+                ]}
+                isScrolled={isScrolled}
+              />
+
+              <NavDropdown
+                trigger="Insights"
+                items={[
+                  {
+                    title: "Market Insights",
+                    href: "/news",
+                    description: "Latest market analysis and commentary",
+                  },
+                  {
+                    title: "Fund Performance",
+                    href: "/investment-products",
+                    description: "Track our fund performance and returns",
+                  },
+                  {
+                    title: "Market Data",
+                    href: "/market-data",
+                    description: "Real-time market data and analytics",
+                  },
+                  {
+                    title: "Investment Tools",
+                    href: "/calculators",
+                    description: "Financial calculators and planning tools",
+                  },
+                  {
+                    title: "Resources",
+                    href: "/resources",
+                    description: "Investment forms, FAQs, and guides",
+                  },
+                ]}
+                isScrolled={isScrolled}
+              />
+
+              <NavDropdown
+                trigger="About Tesah"
+                items={[
+                  {
+                    title: "Our Story",
+                    href: "/about",
+                    description: "Learn about Tesah Capital's journey since 2010",
+                  },
+                  {
+                    title: "Leadership Team",
+                    href: "/leadership",
+                    description: "Meet our experienced leadership team",
+                  },
+                  {
+                    title: "Awards & Recognition",
+                    href: "/achievements",
+                    description: "Our achievements and industry recognition",
+                  },
+                  {
+                    title: "Careers",
+                    href: "/join-tesah",
+                    description: "Join our growing team",
+                  },
+                  {
+                    title: "Legal Information",
+                    href: "/legal",
+                    description: "Terms, privacy policy, and disclaimers",
+                  },
+                ]}
+                isScrolled={isScrolled}
+              />
+            </div>
+          </nav>
+
+          {/* Right side actions */}
+          <div className="flex items-center gap-3">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="hidden md:inline-flex border-slate-300 text-slate-700 hover:bg-slate-50 bg-transparent"
+            >
+              <Link href="/contact">Get in touch</Link>
+            </Button>
+
+            <Button asChild size="sm" className="hidden md:inline-flex bg-slate-900 hover:bg-slate-800 text-white">
+              <Link href="/client-portal">Get started</Link>
+            </Button>
+
+            {/* Mobile Menu */}
+            <MobileNav />
+          </div>
         </div>
-        <nav className="hidden md:flex gap-6 items-center">
-          <Link href="/" className="text-sm font-medium text-secondary/80 hover:text-secondary">
-            Home
-          </Link>
-
-          <NavDropdown
-            trigger="About Us"
-            items={[
-              { title: "Company Overview", href: "/about" },
-              { title: "Our Values", href: "/about#values" },
-              { title: "Our Team", href: "/about#team" },
-              { title: "Achievements", href: "/achievements" },
-              {
-                title: "Leadership",
-                href: "/leadership",
-                description: "Meet our experienced leadership team",
-              },
-            ]}
-            isScrolled={isScrolled}
-          />
-
-          <NavDropdown
-            trigger="Services"
-            items={[
-              { title: "Investment Accounts", href: "/services/investment-accounts" },
-              { title: "Wealth Management", href: "/services/wealth-management" },
-              { title: "Institutional Funds", href: "/services/institutional-funds" },
-              { title: "All Services", href: "/services" },
-            ]}
-            isScrolled={isScrolled}
-          />
-
-          <NavDropdown
-            trigger="Investment Products"
-            items={[
-              { title: "Tesah Treasury Trust (TTT)", href: "/investment-products#ttt" },
-              { title: "Tesah Future Fund (TFF)", href: "/investment-products#tff" },
-              { title: "All Products", href: "/investment-products" },
-            ]}
-            isScrolled={isScrolled}
-          />
-
-          <NavDropdown
-            trigger="Resources"
-            items={[
-              { title: "Investment Forms", href: "/resources#forms" },
-              { title: "FAQs", href: "/resources#faq" },
-              { title: "Market Data", href: "/market-data" },
-              { title: "News & Updates", href: "/news" },
-              { title: "Financial Calculators", href: "/calculators" },
-              { title: "Legal", href: "/legal" },
-            ]}
-            isScrolled={isScrolled}
-          />
-
-          <Link href="/contact" className="text-sm font-medium text-secondary/80 hover:text-secondary">
-            Contact
-          </Link>
-          <Link href="/join-tesah" className="text-sm font-medium text-secondary/80 hover:text-secondary">
-            Join Tesah
-          </Link>
-        </nav>
-        <Button
-          className={cn(
-            "bg-secondary hover:bg-secondary/90 text-white transition-all duration-300",
-            isScrolled ? "h-8 text-sm" : "",
-          )}
-          asChild
-        >
-          <Link href="/client-portal">Get Started</Link>
-        </Button>
       </div>
     </header>
   )

@@ -1,174 +1,113 @@
 "use client"
 
-import * as React from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
-
+import { Menu, X, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 export function MobileNav() {
-  const [open, setOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const navigationItems = [
+    {
+      title: "Investment solutions",
+      items: [
+        { title: "Investment Products Overview", href: "/investment-products" },
+        { title: "Tesah Treasury Trust (TTT)", href: "/investment-products#ttt" },
+        { title: "Tesah Future Fund (TFF)", href: "/investment-products#tff" },
+        { title: "Investment Accounts", href: "/services/investment-accounts" },
+      ],
+    },
+    {
+      title: "Services",
+      items: [
+        { title: "Wealth Management", href: "/services/wealth-management" },
+        { title: "Institutional Services", href: "/services/institutional-funds" },
+        { title: "Investment Advisory", href: "/services" },
+      ],
+    },
+    {
+      title: "Insights",
+      items: [
+        { title: "Market Insights", href: "/news" },
+        { title: "Fund Performance", href: "/investment-products" },
+        { title: "Market Data", href: "/market-data" },
+        { title: "Investment Tools", href: "/calculators" },
+        { title: "Resources", href: "/resources" },
+      ],
+    },
+    {
+      title: "About Tesah",
+      items: [
+        { title: "Our Story", href: "/about" },
+        { title: "Leadership Team", href: "/leadership" },
+        { title: "Awards & Recognition", href: "/achievements" },
+        { title: "Careers", href: "/join-tesah" },
+        { title: "Legal Information", href: "/legal" },
+      ],
+    },
+  ]
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          className="mr-2 px-0 text-secondary hover:bg-transparent hover:text-secondary focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
-        >
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle Menu</span>
+        <Button variant="ghost" size="sm" className="lg:hidden p-2">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0 sm:max-w-xs">
-        <div className="px-7">
-          <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
-            <span className="font-bold text-lg text-secondary">Tesah Capital</span>
-          </Link>
+      <SheetContent side="right" className="w-full sm:w-80 p-0">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <span className="font-semibold text-lg">Menu</span>
+            <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4 space-y-2">
+              {navigationItems.map((section, index) => (
+                <Collapsible key={index}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left font-medium hover:bg-slate-50 rounded-lg">
+                    {section.title}
+                    <ChevronDown className="h-4 w-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-4 space-y-1">
+                    {section.items.map((item, itemIndex) => (
+                      <Link
+                        key={itemIndex}
+                        href={item.href}
+                        className="block p-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.title}
+                      </Link>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <div className="p-4 border-t space-y-3">
+            <Button asChild className="w-full bg-slate-900 hover:bg-slate-800">
+              <Link href="/client-portal" onClick={() => setIsOpen(false)}>
+                Client Portal
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full bg-transparent">
+              <Link href="/contact" onClick={() => setIsOpen(false)}>
+                Get in touch
+              </Link>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 px-7 mt-8">
-          <Link href="/" className="text-base font-medium text-secondary" onClick={() => setOpen(false)}>
-            Home
-          </Link>
-
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="about" className="border-b-0">
-              <AccordionTrigger className="py-2 text-base font-medium text-secondary">About Us</AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col space-y-2 pl-4">
-                  <Link href="/about" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Company Overview
-                  </Link>
-                  <Link href="/about#values" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Our Values
-                  </Link>
-                  <Link href="/about#team" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Our Team
-                  </Link>
-                  <Link href="/achievements" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Achievements
-                  </Link>
-                  <Link href="/leadership" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Leadership
-                  </Link>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="services" className="border-b-0">
-              <AccordionTrigger className="py-2 text-base font-medium text-secondary">Services</AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col space-y-2 pl-4">
-                  <Link
-                    href="/services/investment-accounts"
-                    className="text-sm text-secondary/80"
-                    onClick={() => setOpen(false)}
-                  >
-                    Investment Accounts
-                  </Link>
-                  <Link
-                    href="/services/wealth-management"
-                    className="text-sm text-secondary/80"
-                    onClick={() => setOpen(false)}
-                  >
-                    Wealth Management
-                  </Link>
-                  <Link
-                    href="/services/institutional-funds"
-                    className="text-sm text-secondary/80"
-                    onClick={() => setOpen(false)}
-                  >
-                    Institutional Funds
-                  </Link>
-                  <Link href="/services" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    All Services
-                  </Link>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="investment-products" className="border-b-0">
-              <AccordionTrigger className="py-2 text-base font-medium text-secondary">
-                Investment Products
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col space-y-2 pl-4">
-                  <Link
-                    href="/investment-products#ttt"
-                    className="text-sm text-secondary/80"
-                    onClick={() => setOpen(false)}
-                  >
-                    Tesah Treasury Trust (TTT)
-                  </Link>
-                  <Link
-                    href="/investment-products#tff"
-                    className="text-sm text-secondary/80"
-                    onClick={() => setOpen(false)}
-                  >
-                    Tesah Future Fund (TFF)
-                  </Link>
-                  <Link
-                    href="/investment-products"
-                    className="text-sm text-secondary/80"
-                    onClick={() => setOpen(false)}
-                  >
-                    All Products
-                  </Link>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="resources" className="border-b-0">
-              <AccordionTrigger className="py-2 text-base font-medium text-secondary">Resources</AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col space-y-2 pl-4">
-                  <Link href="/resources#forms" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Investment Forms
-                  </Link>
-                  <Link href="/resources#faq" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    FAQs
-                  </Link>
-                  <Link href="/market-data" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Market Data
-                  </Link>
-                  <Link href="/news" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    News & Updates
-                  </Link>
-                  <Link href="/calculators" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Financial Calculators
-                  </Link>
-                  <Link href="/legal" className="text-sm text-secondary/80" onClick={() => setOpen(false)}>
-                    Legal
-                  </Link>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-
-          <Link href="/contact" className="text-base font-medium text-secondary" onClick={() => setOpen(false)}>
-            Contact
-          </Link>
-
-          <Link href="/join-tesah" className="text-base font-medium text-secondary" onClick={() => setOpen(false)}>
-            Join Tesah
-          </Link>
-
-          <Button className="mt-4 bg-secondary hover:bg-secondary/90 text-white" asChild>
-            <Link href="/client-portal" onClick={() => setOpen(false)}>
-              Get Started
-            </Link>
-          </Button>
-        </div>
-        <Button
-          variant="ghost"
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
-          onClick={() => setOpen(false)}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </Button>
       </SheetContent>
     </Sheet>
   )

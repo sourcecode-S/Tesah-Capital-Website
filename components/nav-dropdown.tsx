@@ -1,76 +1,61 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+interface NavItem {
+  title: string
+  href: string
+  description?: string
+}
+
 interface NavDropdownProps {
   trigger: string
-  items: {
-    title: string
-    href: string
-  }[]
+  items: NavItem[]
   isScrolled?: boolean
 }
 
-export function NavDropdown({ trigger, items, isScrolled }: NavDropdownProps) {
+export function NavDropdown({ trigger, items, isScrolled = false }: NavDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
-    setIsOpen(true)
-  }
-
-  const handleMouseLeave = () => {
-    // Set a timeout to close the dropdown after 500ms (half a second)
-    timeoutRef.current = setTimeout(() => {
-      setIsOpen(false)
-    }, 500)
-  }
-
-  // Clean up timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
 
   return (
-    <div className="relative" ref={dropdownRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div className="relative group" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
       <button
         className={cn(
-          "flex items-center gap-1 text-sm font-medium text-secondary/80 hover:text-secondary transition-colors",
-          isOpen && "text-secondary",
+          "flex items-center gap-1 px-6 py-4 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors relative",
+          "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:scale-x-0 after:transition-transform after:duration-200",
+          isOpen && "text-slate-900 after:scale-x-100",
         )}
         aria-expanded={isOpen}
       >
         {trigger}
-        <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
+        <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", isOpen && "rotate-180")} />
       </button>
-      {isOpen && (
-        <div className="absolute left-0 top-full z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg overflow-hidden">
-          <div className="py-1">
-            {items.map((item, index) => (
-              <Link
-                key={index}
-                href={item.href}
-                className="block px-4 py-2 text-sm text-secondary/80 hover:bg-secondary/10 hover:text-secondary transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.title}
-              </Link>
-            ))}
-          </div>
+
+      <div
+        className={cn(
+          "absolute top-full left-0 mt-0 w-96 bg-white shadow-2xl border border-slate-100 overflow-hidden transition-all duration-300 origin-top",
+          isOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible",
+        )}
+      >
+        <div className="py-4">
+          {items.map((item, index) => (
+            <Link
+              key={index}
+              href={item.href}
+              className="block px-6 py-3 hover:bg-slate-50 transition-colors group/item border-l-2 border-transparent hover:border-l-primary"
+            >
+              <div className="font-medium text-slate-900 group-hover/item:text-primary mb-1">{item.title}</div>
+              {item.description && <div className="text-sm text-slate-600 leading-relaxed">{item.description}</div>}
+            </Link>
+          ))}
         </div>
-      )}
+
+        {/* Bottom accent */}
+        <div className="h-1 bg-gradient-to-r from-primary to-secondary"></div>
+      </div>
     </div>
   )
 }
