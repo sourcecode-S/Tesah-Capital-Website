@@ -1,122 +1,130 @@
-import { Shield, Lightbulb, Users, GraduationCap } from "lucide-react"
+import type { Metadata } from "next"
 import { Footer } from "@/components/footer"
+import { LeadershipSection } from "@/components/leadership-section"
 import { TeamSection } from "@/components/team-section"
 
-export const metadata = {
-  title: "About Us - Tesah Capital Limited",
-  description: "Learn about Tesah Capital Limited, your investment gateway to Africa since 2010.",
+export const metadata: Metadata = {
+  title: "About Tesah Capital | Our Story & Leadership",
+  description:
+    "Learn about Tesah Capital's history, mission, and the experienced team that drives our success in investment management and financial services.",
 }
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="container px-4 md:px-6">
-            <div className="mx-auto max-w-3xl text-center">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">About Tesah Capital</h1>
-              <p className="mt-4 text-muted-foreground md:text-xl">
-                Your trusted investment partner in Africa since 2010.
+    <>
+      <main className="min-h-screen">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-r from-primary to-secondary text-white py-20">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">About Tesah Capital</h1>
+              <p className="text-xl md:text-2xl mb-8">
+                Building wealth through strategic investment management and personalized financial solutions
               </p>
             </div>
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-12 lg:grid-cols-2 items-center">
-              <div>
-                <img
-                  src="/images/tesah-office-building.jpeg"
-                  alt="Tesah Capital office building"
-                  className="rounded-lg object-cover w-full h-auto"
-                  width={600}
-                  height={400}
-                />
-              </div>
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold tracking-tighter">Our Story</h2>
-                <p className="text-muted-foreground md:text-lg">
-                  Tesah Capital Limited was incorporated in 2010 under the laws of Ghana to provide fund management
-                  services to pension trustees, financial and non-financial institutions, corporates and individuals.
+        {/* Our Story Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Story</h2>
+              <div className="prose prose-lg mx-auto">
+                <p className="text-lg text-gray-700 mb-6">
+                  Founded with a vision to democratize access to sophisticated investment strategies, Tesah Capital has
+                  grown from a boutique investment firm to a trusted partner for individuals and institutions seeking
+                  superior financial outcomes.
                 </p>
-                <p className="text-muted-foreground md:text-lg">
-                  We are licensed by the Securities and Exchange Commission (SEC) as an Investment Advisor and Fund
-                  Manager and registered by the National Pensions and Regulatory Authority (NPRA) as a Pension Fund
-                  Manager.
+                <p className="text-lg text-gray-700 mb-6">
+                  Our journey began with a simple belief: that every investor deserves access to institutional-quality
+                  investment management, regardless of their portfolio size. This philosophy continues to drive our
+                  commitment to excellence and innovation in everything we do.
                 </p>
-                <p className="text-muted-foreground md:text-lg">
-                  As your investment Gateway to Africa, we have grown our capabilities to meet the needs of our clients
-                  over time and offer alternative ways to achieve investment growth and capital preservation. Our
-                  achievements and milestones since formation in 2010 continue to shape our business and we remain
-                  steadfast in our commitment to protect and grow our clients' wealth and savings over the long term.
+                <p className="text-lg text-gray-700">
+                  Today, we manage assets across multiple strategies, serving clients who value our disciplined
+                  approach, transparent communication, and unwavering focus on long-term value creation.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted" id="values">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Our Core Values</h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  The principles that guide our operations and client relationships.
-                </p>
-              </div>
-            </div>
-            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-4">
-              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
-                <Shield className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-bold">Trust</h3>
-                <p className="text-center text-muted-foreground">
-                  We build lasting relationships based on integrity, transparency, and reliability in all our dealings.
-                </p>
-              </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
-                <Lightbulb className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-bold">Innovation</h3>
-                <p className="text-center text-muted-foreground">
-                  We continuously seek creative solutions and embrace new technologies to deliver superior investment
-                  outcomes.
-                </p>
-              </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
-                <Users className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-bold">Customer Centricity</h3>
-                <p className="text-center text-muted-foreground">
-                  We place our clients at the heart of everything we do, tailoring our services to meet their unique
-                  needs.
-                </p>
-              </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
-                <GraduationCap className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-bold">Knowledge</h3>
-                <p className="text-center text-muted-foreground">
-                  We leverage our deep expertise and continuous learning to make informed investment decisions for our
-                  clients.
-                </p>
+        {/* Mission & Values Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Mission & Values</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-4">Integrity</h3>
+                  <p className="text-gray-600">
+                    We conduct business with the highest ethical standards, ensuring transparency and honesty in all our
+                    interactions.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-4">Excellence</h3>
+                  <p className="text-gray-600">
+                    We strive for excellence in investment management, client service, and operational efficiency to
+                    deliver superior outcomes.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-4">Partnership</h3>
+                  <p className="text-gray-600">
+                    We build long-term partnerships with our clients, understanding their unique needs and goals to
+                    provide tailored solutions.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32" id="team">
-          <div className="container px-4 md:px-6">
-            <div className="mx-auto max-w-3xl text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter">Our Team</h2>
-              <p className="mt-4 text-muted-foreground md:text-lg">
-                Our dedicated teams work together to provide exceptional service and investment expertise.
+        {/* Leadership Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Leadership</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Meet the experienced professionals who guide Tesah Capital's strategic vision and operations.
               </p>
             </div>
-            <div className="mx-auto max-w-5xl">
-              <TeamSection />
+            <LeadershipSection />
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Team</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Get to know the dedicated professionals who make Tesah Capital a trusted partner in your financial
+                journey.
+              </p>
             </div>
+            <TeamSection />
           </div>
         </section>
       </main>
       <Footer />
-    </div>
+    </>
   )
 }
