@@ -8,12 +8,14 @@ export const metadata: Metadata = {
 export default function TermsOfServicePage() {
   return (
     <main className="flex-1">
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-primary to-secondary text-white">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Terms of Service</h1>
-              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-white">
+                Terms of Service
+              </h1>
+              <p className="mx-auto max-w-[700px] text-white/80 md:text-xl">
                 Terms and conditions for using Tesah Capital Limited's services.
               </p>
             </div>

@@ -8,5 +8,6 @@ export const metadata: Metadata = {
 }
 
 export default function JoinTesahPage() {
+  // This page uses a client component, so updates should be made in JoinTesahClientPage.tsx
   return <JoinTesahClientPage />
 }

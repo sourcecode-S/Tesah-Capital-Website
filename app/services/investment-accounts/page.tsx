@@ -13,11 +13,14 @@ export default function InvestmentAccountsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
+        {/* Hero Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-primary to-secondary text-white">
           <div className="container px-4 md:px-6">
             <div className="mx-auto max-w-3xl text-center">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Investment Accounts</h1>
-              <p className="mt-4 text-muted-foreground md:text-xl">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-white">
+                Investment Accounts
+              </h1>
+              <p className="mt-4 text-white/80 md:text-xl">
                 Open a personalized investment account and start building your wealth with professional guidance.
               </p>
             </div>

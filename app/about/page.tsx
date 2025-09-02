@@ -98,17 +98,7 @@ export default function AboutPage() {
         </section>
 
         {/* Leadership Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Leadership</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Meet the experienced professionals who guide Tesah Capital's strategic vision and operations.
-              </p>
-            </div>
-            <LeadershipSection />
-          </div>
-        </section>
+        <LeadershipSection />
 
         {/* Team Section */}
         <section className="py-16 bg-gray-50">

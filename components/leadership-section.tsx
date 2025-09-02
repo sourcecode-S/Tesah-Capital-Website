@@ -48,21 +48,7 @@ export function LeadershipSection() {
 
   return (
     <>
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {leadershipData.map((leader, i) => (
-          <div
-            key={i}
-            className="flex flex-col items-center text-center cursor-pointer hover:opacity-90 transition-opacity"
-            onClick={() => setSelectedLeader(i)}
-          >
-            <div className="relative h-48 w-48 overflow-hidden rounded-full bg-muted">
-              <img src={leader.image || "/placeholder.svg"} alt={leader.name} className="w-full h-full object-cover" />
-            </div>
-            <h3 className="mt-4 text-xl font-bold">{leader.name}</h3>
-            <p className="text-primary font-medium">{leader.title}</p>
-          </div>
-        ))}
-      </div>
+      
 
       <Dialog open={selectedLeader !== null} onOpenChange={(open) => !open && setSelectedLeader(null)}>
         {selectedLeader !== null && (

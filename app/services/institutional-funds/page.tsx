@@ -13,17 +13,21 @@ export default function InstitutionalFundsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
+        {/* Hero Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-primary to-secondary text-white">
           <div className="container px-4 md:px-6">
             <div className="mx-auto max-w-3xl text-center">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Institutional Funds</h1>
-              <p className="mt-4 text-muted-foreground md:text-xl">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-white">
+                Institutional Funds
+              </h1>
+              <p className="mt-4 text-white/80 md:text-xl">
                 Tailor-made fund management services for institutions, corporates, churches, clubs and associations.
               </p>
             </div>
           </div>
         </section>
 
+        {/* Services Section */}
         <section className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <div className="mx-auto max-w-3xl mb-12">
@@ -222,6 +226,7 @@ export default function InstitutionalFundsPage() {
           </div>
         </section>
 
+        {/* Process Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
           <div className="container px-4 md:px-6">
             <div className="grid gap-12 lg:grid-cols-2 items-center">
@@ -345,6 +350,7 @@ export default function InstitutionalFundsPage() {
           </div>
         </section>
 
+        {/* Contact Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary text-secondary-foreground">
           <div className="container px-4 md:px-6 text-center">
             <div className="mx-auto max-w-3xl space-y-4">
