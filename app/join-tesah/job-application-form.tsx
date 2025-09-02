@@ -12,7 +12,7 @@ interface JobApplicationFormProps {
   availableJobs: JobListing[]
 }
 
-export default function JobApplicationForm({ selectedJobId, availableJobs }: JobApplicationFormProps) {
+export function JobApplicationForm({ selectedJobId, availableJobs }: JobApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -235,3 +235,6 @@ export default function JobApplicationForm({ selectedJobId, availableJobs }: Job
     </div>
   )
 }
+
+// Default export for backward compatibility
+export default JobApplicationForm

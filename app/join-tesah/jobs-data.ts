@@ -1,5 +1,18 @@
+export interface JobListing {
+  id: string
+  title: string
+  department: string
+  location: string
+  type: string
+  description: string
+  responsibilities: string[]
+  requirements: string[]
+  postedDate: string
+  status?: string
+}
+
 // Load jobs from admin-managed data
-export function getAvailableJobs() {
+export function getAvailableJobs(): JobListing[] {
   if (typeof window !== "undefined") {
     const savedJobs = localStorage.getItem("tesah_jobs")
     if (savedJobs) {
@@ -31,9 +44,13 @@ export function getAvailableJobs() {
         "Proficiency in Excel and financial modeling",
       ],
       postedDate: "2024-01-15",
+      status: "active",
     },
   ]
 }
+
+// Export jobsData as named export for compatibility
+export const jobsData = getAvailableJobs()
 
 // For backward compatibility
 export const availableJobs = getAvailableJobs()
