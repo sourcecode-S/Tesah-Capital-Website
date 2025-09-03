@@ -97,7 +97,7 @@ export default function Home() {
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
-                    <div className="absolute bottom-6 left-6 text-white">
+                    <div className="absolute bottom-6 left-8 text-white">
                       <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-3 inline-block">
                         Low Risk
                       </div>
@@ -133,10 +133,10 @@ export default function Home() {
                       src="/images/tesah-future-fund-banner.jpeg"
                       alt="Tesah Future Fund"
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-left object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
-                    <div className="absolute bottom-6 left-6 text-white">
+                    <div className="absolute bottom-6 left-8 text-white">
                       <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-3 inline-block">
                         Medium-High Risk
                       </div>
