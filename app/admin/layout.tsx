@@ -1,195 +1,277 @@
-"use client"
+'use client'
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import { useRouter, usePathname } from "next/navigation"
-import Link from "next/link"
-import Image from "next/image"
+import { useEffect, useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Separator } from '@/components/ui/separator'
 import {
-  PanelLeft,
-  Home,
-  FileText,
-  Users,
-  Settings,
-  BarChart3,
-  ImageIcon,
-  Briefcase,
   LogOut,
+  Users,
+  FileText,
+  Briefcase,
+  TrendingUp,
+  User,
+  Menu,
+  Home,
   Loader2,
-  LineChart,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { Separator } from "@/components/ui/separator"
+} from 'lucide-react'
 
-interface User {
+interface AdminUser {
   id: string
   email: string
-  name: string
-  role: string
+  role: 'admin' | 'subadmin' | 'editor'
+  first_name?: string
+  last_name?: string
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const router = useRouter()
   const pathname = usePathname()
+  const supabase = createClient()
+  const [user, setUser] = useState<AdminUser | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("admin_user")
-    if (storedUser) {
+    const checkAuth = async () => {
       try {
-        setUser(JSON.parse(storedUser))
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser()
+
+        if (!authUser) {
+          router.push('/auth/login')
+          return
+        }
+
+        // Get user profile with role
+        const { data: profile, error } = await supabase
+          .from('users_profiles')
+          .select('id, email, role, first_name, last_name')
+          .eq('id', authUser.id)
+          .single()
+
+        if (error || !profile) {
+          router.push('/auth/login')
+          return
+        }
+
+        // Redirect editors to public site
+        if (profile.role === 'editor' && !pathname.startsWith('/admin/profile')) {
+          router.push('/')
+          return
+        }
+
+        setUser(profile as AdminUser)
       } catch (error) {
-        console.error("Failed to parse user data from localStorage:", error)
-        localStorage.removeItem("admin_user") // Clear invalid data
-        router.push("/admin/login")
+        console.error('Auth check failed:', error)
+        router.push('/auth/login')
+      } finally {
+        setLoading(false)
       }
     }
-    setIsLoading(false)
-  }, [router])
 
-  useEffect(() => {
-    if (!isLoading && !user && pathname !== "/admin/login") {
-      router.push("/admin/login")
+    if (pathname === '/admin/login') {
+      setLoading(false)
+      return
     }
-  }, [isLoading, user, pathname, router])
 
-  const handleLogout = () => {
-    localStorage.removeItem("admin_user")
-    setUser(null)
-    router.push("/admin/login")
+    checkAuth()
+  }, [router, supabase, pathname])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/login')
   }
 
-  if (isLoading || (!user && pathname !== "/admin/login")) {
+  if (pathname === '/admin/login') {
+    return children
+  }
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     )
   }
 
-  if (!user && pathname === "/admin/login") {
-    return <>{children}</> // Render login page directly without layout
+  if (!user) {
+    return null
   }
 
   const navItems = [
-    { name: "Dashboard", href: "/admin", icon: Home, roles: ["super_admin", "admin", "editor", "viewer"] },
-    { name: "Content", href: "/admin/content", icon: FileText, roles: ["super_admin", "admin", "editor"] },
-    { name: "Users", href: "/admin/users", icon: Users, roles: ["super_admin", "admin"] },
-    { name: "Media", href: "/admin/media", icon: ImageIcon, roles: ["super_admin", "admin", "editor"] },
-    { name: "Careers", href: "/admin/careers", icon: Briefcase, roles: ["super_admin", "admin", "editor"] },
-    { name: "Analytics", href: "/admin/analytics", icon: BarChart3, roles: ["super_admin", "admin"] },
     {
-      name: "Market Data",
-      href: "/admin/market-data",
-      icon: LineChart,
-      roles: ["super_admin", "admin", "editor", "viewer"],
-    }, // New item
-    { name: "Settings", href: "/admin/settings", icon: Settings, roles: ["super_admin", "admin"] },
+      href: '/admin/dashboard',
+      icon: Home,
+      label: 'Dashboard',
+      roles: ['admin', 'subadmin', 'editor'],
+    },
+    {
+      href: '/admin/users',
+      icon: Users,
+      label: 'Users',
+      roles: ['admin'],
+    },
+    {
+      href: '/admin/content',
+      icon: FileText,
+      label: 'Content',
+      roles: ['admin', 'subadmin', 'editor'],
+    },
+    {
+      href: '/admin/jobs',
+      icon: Briefcase,
+      label: 'Job Postings',
+      roles: ['admin', 'subadmin', 'editor'],
+    },
+    {
+      href: '/admin/market-data',
+      icon: TrendingUp,
+      label: 'Market Data',
+      roles: ['admin', 'subadmin', 'editor'],
+    },
+    {
+      href: '/admin/profile',
+      icon: User,
+      label: 'Profile',
+      roles: ['admin', 'subadmin', 'editor'],
+    },
   ]
 
-  const userHasPermission = (itemRoles: string[]) => {
-    return user ? itemRoles.includes(user.role) : false
-  }
+  const filteredNavItems = navItems.filter((item) =>
+    item.roles.includes(user.role)
+  )
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
-      <div className="hidden border-r bg-gray-100/40 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Link href="/admin" className="flex items-center gap-2 font-semibold">
-              <Image src="/images/tesah-logo.png" alt="Tesah Capital Logo" width={30} height={30} />
-              <span className="text-lg">Admin Portal</span>
-            </Link>
-          </div>
-          <div className="flex-1 overflow-auto py-2">
-            <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
-              {navItems.map(
-                (item) =>
-                  userHasPermission(item.roles) && (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:text-blue-600 ${
-                        pathname === item.href ? "bg-gray-200 text-blue-600" : "text-gray-600"
-                      }`}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      {item.name}
-                    </Link>
-                  ),
-              )}
-              <Separator className="my-4" />
-              <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-600 transition-all hover:text-blue-600">
-                <LogOut className="h-4 w-4" />
-                <button onClick={handleLogout} className="w-full text-left">
-                  Logout
-                </button>
-              </div>
-            </nav>
-          </div>
-          <div className="mt-auto p-4 text-xs text-gray-500 border-t">
-            Logged in as: {user?.name} ({user?.role})
-          </div>
+      <aside
+        className={`${
+          sidebarOpen ? 'w-64' : 'w-20'
+        } hidden md:flex border-r border-border bg-card flex-col transition-all duration-300`}
+      >
+        {/* Logo */}
+        <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+          {sidebarOpen && (
+            <h1 className="text-lg font-bold text-foreground">Tesah Admin</h1>
+          )}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="rounded p-1 hover:bg-muted"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
         </div>
-      </div>
 
-      {/* Mobile Header & Sidebar */}
-      <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-b bg-gray-100/40 px-4 lg:h-[60px] lg:px-6 md:hidden">
+        {/* Navigation */}
+        <nav className="flex-1 space-y-2 px-3 py-4 overflow-auto">
+          {filteredNavItems.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href
+            return (
+              <Link key={item.href} href={item.href}>
+                <span
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  {sidebarOpen && <span>{item.label}</span>}
+                </span>
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* User info & logout */}
+        <div className="border-t border-border px-3 py-4 space-y-2">
+          {sidebarOpen && (
+            <div className="px-2 py-2 text-xs">
+              <p className="text-muted-foreground truncate">{user.email}</p>
+              <p className="text-xs uppercase text-primary font-semibold">
+                {user.role}
+              </p>
+            </div>
+          )}
+          <Button
+            onClick={handleSignOut}
+            variant="outline"
+            size="sm"
+            className="w-full text-xs"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            {sidebarOpen && 'Sign Out'}
+          </Button>
+        </div>
+      </aside>
+
+      {/* Mobile Header & Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile Header */}
+        <header className="md:hidden border-b border-border bg-card px-4 py-3 flex items-center justify-between">
+          <h1 className="text-lg font-bold">Tesah Admin</h1>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 md:hidden bg-transparent">
-                <PanelLeft className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-lg font-medium">
-                <Link href="/admin" className="flex items-center gap-2 text-lg font-semibold">
-                  <Image src="/images/tesah-logo.png" alt="Tesah Capital Logo" width={30} height={30} />
-                  <span>Admin Portal</span>
-                </Link>
-                <Separator className="my-4" />
-                {navItems.map(
-                  (item) =>
-                    userHasPermission(item.roles) && (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
-                          pathname === item.href ? "bg-gray-100 text-blue-600" : "text-gray-600"
-                        } hover:text-blue-600`}
+            <SheetContent side="left">
+              <nav className="space-y-2 mt-6">
+                {filteredNavItems.map((item) => {
+                  const Icon = item.icon
+                  const isActive = pathname === item.href
+                  return (
+                    <Link key={item.href} href={item.href}>
+                      <span
+                        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                          isActive
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
                       >
-                        <item.icon className="h-5 w-5" />
-                        {item.name}
-                      </Link>
-                    ),
-                )}
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </span>
+                    </Link>
+                  )
+                })}
                 <Separator className="my-4" />
-                <div className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-gray-600 hover:text-blue-600">
-                  <LogOut className="h-5 w-5" />
-                  <button onClick={handleLogout} className="w-full text-left">
-                    Logout
-                  </button>
+                <div className="px-2 py-2 text-xs">
+                  <p className="text-muted-foreground truncate">{user.email}</p>
+                  <p className="text-xs uppercase text-primary font-semibold">
+                    {user.role}
+                  </p>
                 </div>
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </Button>
               </nav>
-              <div className="mt-auto p-4 text-xs text-gray-500 border-t">
-                Logged in as: {user?.name} ({user?.role})
-              </div>
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1 text-center text-lg font-semibold">Admin Portal</div>
         </header>
 
-        {/* Main Content */}
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-gray-50">
-          <TooltipProvider>{children}</TooltipProvider>
-        </main>
+        {/* Main content */}
+        <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
     </div>
   )
