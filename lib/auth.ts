@@ -36,7 +36,8 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        // Mock authentication logic
+        // SECURITY: Never hardcode passwords. This is a mock implementation.
+        // In production, use proper authentication services (Auth0, Supabase, NextAuth providers, etc.)
         if (credentials?.email && credentials?.password === "password") {
           const user = users.find((user) => user.email === credentials.email)
           if (user) {
@@ -69,7 +70,17 @@ export const authOptions = {
     signIn: "/admin/login",
     error: "/admin/auth-error",
   },
-  secret: "your-secret-key",
+  // SECURITY: Use environment variable for secret in production
+  secret: process.env.NEXTAUTH_SECRET || "your-secret-key",
+  // SECURITY: Set secure defaults for JWT
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  // SECURITY: Configure session settings
+  session: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
 }
 
 // Permission check function
